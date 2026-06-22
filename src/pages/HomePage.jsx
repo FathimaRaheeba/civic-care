@@ -91,10 +91,10 @@ export default function HomePage() {
       <UserHeader onMenuClick={() => setIsDrawerOpen(true)} />
 
       {/* Centered bounding box to keep data blocks consistently arranged up to 1324px */}
-      <div className="w-full max-w-[1324px] px-[16px] py-[32px] pb-[112px] md:pb-[48px] flex flex-col items-center justify-center">
+      <div className="w-full max-w-[1324px] px-[16px] pt-2 pb-[112px] md:pb-[48px] flex flex-col items-center justify-center">
         
         {/* Main dashboard body components stacked with anchor IDs for scroll-spy */}
-        <main className="w-full flex flex-col items-center justify-center mt-4">
+        <main className="w-full flex flex-col items-center justify-center mt-0">
           
           {/* 2. Dashboard metrics block */}
           <div id="home-section" className="w-full scroll-mt-[80px]">

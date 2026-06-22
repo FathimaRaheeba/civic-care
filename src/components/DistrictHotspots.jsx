@@ -74,10 +74,10 @@ const generateGeoJSON = (districts) => {
 export default function DistrictHotspots() {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
-  
+
   const [selectedDistrict, setSelectedDistrict] = useState(null);
-  const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/dark-v11'); 
-  const [showStyleMenu, setShowStyleMenu] = useState(false);
+  const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/streets-v12');
+  const [showStyleMenu, setShowStyleMenu] = useState('false');
 
   const maxCount = Math.max(...districtsData.map(d => d.count));
   const geojsonData = generateGeoJSON(districtsData);
@@ -88,7 +88,7 @@ export default function DistrictHotspots() {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: mapStyle,
-      center: [76.25, 10.4], 
+      center: [76.25, 10.4],
       zoom: 7.1,
       minZoom: 6,
       maxZoom: 14
@@ -116,11 +116,11 @@ export default function DistrictHotspots() {
             ['linear'],
             ['heatmap-density'],
             0, 'rgba(0, 0, 255, 0)',
-            0.15, 'rgba(56, 189, 248, 0.45)', 
-            0.4, 'rgba(34, 197, 94, 0.7)',   
-            0.65, 'rgba(234, 179, 8, 0.85)', 
-            0.85, 'rgba(249, 115, 22, 0.95)', 
-            1.0, 'rgba(239, 68, 68, 1)'       
+            0.15, 'rgba(56, 189, 248, 0.45)',
+            0.4, 'rgba(34, 197, 94, 0.7)',
+            0.65, 'rgba(234, 179, 8, 0.85)',
+            0.85, 'rgba(249, 115, 22, 0.95)',
+            1.0, 'rgba(239, 68, 68, 1)'
           ],
           'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 9, 24],
           'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0.9, 14, 0.15]
@@ -186,7 +186,7 @@ export default function DistrictHotspots() {
 
   const handleDistrictClick = (d) => {
     setSelectedDistrict(d.name);
-    
+
     if (MAPBOX_TOKEN && mapRef.current) {
       mapRef.current.flyTo({
         center: [d.lng, d.lat],
@@ -261,7 +261,7 @@ export default function DistrictHotspots() {
 
         {/* Main Split Grid */}
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* LEFT COLUMN: Map Card Viewport */}
           <div id="map-viewport-container" className="lg:col-span-5 flex flex-col w-full">
             <div className="w-full relative aspect-[3/4] bg-white border-8 border-white shadow-[0_15px_40px_-15px_rgba(0,0,0,0.06)] rounded-[32px] overflow-hidden flex flex-col">
@@ -269,7 +269,7 @@ export default function DistrictHotspots() {
                 <>
                   <div ref={mapContainerRef} className="w-full flex-1" />
                   <div className="absolute top-4 left-4 z-10">
-                    <button 
+                    <button
                       onClick={() => setShowStyleMenu(!showStyleMenu)}
                       className="flex items-center gap-1.5 px-3 py-2 bg-white/95 backdrop-blur-md border border-slate-100 shadow-sm rounded-xl text-slate-700 hover:text-slate-900 font-semibold text-xs"
                     >
@@ -278,9 +278,9 @@ export default function DistrictHotspots() {
                     </button>
                     {showStyleMenu && (
                       <div className="absolute top-full left-0 mt-2 w-40 bg-white border border-slate-100 shadow-md rounded-xl p-1 z-20">
+                        <button onClick={() => { setMapStyle('mapbox://styles/mapbox/streets-v12'); setShowStyleMenu(false); }} className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${mapStyle.includes('streets') ? 'bg-slate-100 text-slate-900' : 'text-slate-600'}`}>Streets Style</button>
                         <button onClick={() => { setMapStyle('mapbox://styles/mapbox/dark-v11'); setShowStyleMenu(false); }} className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${mapStyle.includes('dark') ? 'bg-slate-100 text-slate-900' : 'text-slate-600'}`}>Snapchat Dark</button>
                         <button onClick={() => { setMapStyle('mapbox://styles/mapbox/light-v11'); setShowStyleMenu(false); }} className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${mapStyle.includes('light') ? 'bg-slate-100 text-slate-900' : 'text-slate-600'}`}>Minimal Light</button>
-                        <button onClick={() => { setMapStyle('mapbox://styles/mapbox/streets-v12'); setShowStyleMenu(false); }} className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${mapStyle.includes('streets') ? 'bg-slate-100 text-slate-900' : 'text-slate-600'}`}>Streets Style</button>
                       </div>
                     )}
                   </div>
@@ -334,7 +334,7 @@ export default function DistrictHotspots() {
               <span className="text-xs text-slate-400 font-semibold">14 Districts Active</span>
             </div>
 
-            <div className="flex flex-col gap-3 max-h-[580px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 max-h-[380px] md:max-h-[480px] lg:max-h-[580px] overflow-y-auto pr-2 custom-scrollbar">
               {districtsData.map((d) => (
                 <DistrictHotspotCard
                   key={d.rank}

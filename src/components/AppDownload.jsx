@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { FaStar } from 'react-icons/fa6';
 import { HiMegaphone } from 'react-icons/hi2'; 
 import { FiArrowRight } from 'react-icons/fi';
@@ -115,10 +116,10 @@ export default function AppDownload() {
             Join thousands of citizens already creating positive change in their communities.
           </p>
 
-          <button className="inline-flex items-center space-x-2.5 px-6 sm:px-8 py-3.5 bg-white hover:bg-slate-50 text-indigo-600 font-bold text-sm sm:text-base rounded-xl shadow-md transition-all duration-200 active:scale-95 w-full sm:w-auto justify-center cursor-pointer">
+          <Link to="/signin" className="inline-flex items-center space-x-2.5 px-6 sm:px-8 py-3.5 bg-white hover:bg-slate-50 text-indigo-600 font-bold text-sm sm:text-base rounded-xl shadow-md transition-all duration-200 active:scale-95 w-full sm:w-auto justify-center cursor-pointer">
             <span>Get Started Now</span>
             <FiArrowRight className="w-4 h-4 stroke-[2.5]" />
-          </button>
+          </Link>
 
         </div>
       </section>

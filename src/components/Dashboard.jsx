@@ -40,9 +40,9 @@ export default function Dashboard({ onOpenInsights }) {
        Updated the wrapper to seamlessly layer inside your primary oklab linear-gradient canvas,
        retaining local layout margins without hard-coding conflicting white block sections.
        ========================================================================== */
-    <section className="w-full bg-transparent py-8 px-4 sm:px-6 lg:px-8 font-sans antialiased text-[rgb(0,0,0)]">
+    <section className="w-full bg-transparent pt-1 pb-8 px-4 sm:px-6 lg:px-8 font-sans antialiased text-[rgb(0,0,0)]">
       <div className="max-w-7xl mx-auto">
-        
+
         {/* Header Dashboard Control Stack Block */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
@@ -55,7 +55,7 @@ export default function Dashboard({ onOpenInsights }) {
           </div>
 
           {/* Premium Total Insights Floating Badge */}
-          <button 
+          <button
             onClick={onOpenInsights}
             className="flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl px-4 py-2.5 shadow-sm hover:opacity-95 active:scale-98 transition-all duration-200 self-stretch sm:self-auto justify-center cursor-pointer"
           >
