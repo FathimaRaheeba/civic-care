@@ -13,12 +13,15 @@ export default function Footer() {
           {/* Brand Info Column (Takes 4 cols on large screens) */}
           <div className="lg:col-span-4 flex flex-col space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-xs">
-                <HiMegaphone className="w-4 h-4 text-white -rotate-12" />
-              </div>
-              <span className="text-xl font-extrabold text-slate-900 tracking-tight">
-                CivicCare
-              </span>
+              <div className="flex items-center space-x-3">
+  <div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center bg-gradient-to-br from-[#2B7FFF] to-[#9810FA]">
+    <HiMegaphone className="w-4 h-4 text-white" />
+  </div>
+
+  <span className="text-xl font-bold text-slate-800 tracking-tight">
+    CivicCare
+  </span>
+</div>
             </div>
             <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-xs">
               Empowering citizens to create real change in their communities.

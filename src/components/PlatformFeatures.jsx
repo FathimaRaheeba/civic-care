@@ -56,7 +56,8 @@ export default function PlatformFeatures() {
   ];
 
   return (
-    <section className="w-full bg-slate-50/40 py-20 px-4 sm:px-6 lg:px-8 antialiased">
+    // Added id="features" here to cleanly bind smooth navigation transitions from header clicks
+    <section id="features" className="w-full bg-slate-50/40 py-20 px-4 sm:px-6 lg:px-8 antialiased">
       <div className="max-w-6xl mx-auto">
         
         {/* Core Typography Heading Grid Stack */}

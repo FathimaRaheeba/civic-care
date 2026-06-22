@@ -2,7 +2,7 @@ import React from 'react';
 import { HiOutlineDocumentText, HiOutlineArrowTrendingUp, HiOutlineCheckCircle, HiOutlineChartBar, HiOutlineSparkles } from 'react-icons/hi2';
 import DashboardCard from './DashboardCard';
 
-export default function Dashboard() {
+export default function Dashboard({ onOpenInsights }) {
   const analyticsData = [
     {
       id: 1,
@@ -35,7 +35,12 @@ export default function Dashboard() {
   ];
 
   return (
-    <section className="w-full bg-white py-8 px-4 sm:px-6 lg:px-8 font-sans antialiased">
+    /* ==========================================================================
+       DASHBOARD WRAPPER CANVAS
+       Updated the wrapper to seamlessly layer inside your primary oklab linear-gradient canvas,
+       retaining local layout margins without hard-coding conflicting white block sections.
+       ========================================================================== */
+    <section className="w-full bg-transparent py-8 px-4 sm:px-6 lg:px-8 font-sans antialiased text-[rgb(0,0,0)]">
       <div className="max-w-7xl mx-auto">
         
         {/* Header Dashboard Control Stack Block */}
@@ -44,19 +49,22 @@ export default function Dashboard() {
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
               Dashboard Overview
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">
+            <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
               Monitor citizen complaints and engagement metrics
             </p>
           </div>
 
           {/* Premium Total Insights Floating Badge */}
-          <div className="flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl px-4 py-2.5 shadow-sm self-stretch sm:self-auto justify-center">
+          <button 
+            onClick={onOpenInsights}
+            className="flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl px-4 py-2.5 shadow-sm hover:opacity-95 active:scale-98 transition-all duration-200 self-stretch sm:self-auto justify-center cursor-pointer"
+          >
             <HiOutlineSparkles className="w-5 h-5 animate-pulse text-blue-200" />
             <div className="text-left">
               <span className="block text-[10px] text-blue-100 uppercase tracking-wider font-bold">Total Insights</span>
               <span className="text-base font-black tracking-tight leading-none block mt-0.5">1,883</span>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* 4-Column Fluid Grid Wrapper targeting element 18 explicitly */}

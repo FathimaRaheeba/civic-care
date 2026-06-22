@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { HiOutlineFire, HiOutlineMap, HiOutlineInformationCircle } from 'react-icons/hi2';
-import { FiMap, FiLayers } from 'react-icons/fi';
+import { HiOutlineFire, HiOutlineInformationCircle } from 'react-icons/hi2';
+import { FiLayers } from 'react-icons/fi';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import DistrictHotspotCard from './DistrictHotspotCard';
@@ -27,11 +27,9 @@ const districtsData = [
   { rank: 14, name: "Kasaragod", category: "Water Shortage", count: 28, color: "bg-blue-500", lat: 12.5102, lng: 74.9852, reports: "28 reports", top: "10%", left: "15%" }
 ];
 
-// Helper to generate dense, Snapchat-style simulated heatmap points around district centers
 const generateGeoJSON = (districts) => {
   const features = [];
   districts.forEach(d => {
-    // Primary point
     features.push({
       type: 'Feature',
       properties: {
@@ -47,11 +45,10 @@ const generateGeoJSON = (districts) => {
       }
     });
 
-    // Secondary points to make heatmap look organic and glowing
     const numPoints = Math.min(6, Math.floor(d.count / 15));
     for (let i = 0; i < numPoints; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const radius = 0.04 + Math.random() * 0.12; // Spread coordinates randomly
+      const radius = 0.04 + Math.random() * 0.12;
       const offsetLng = Math.cos(angle) * radius;
       const offsetLat = Math.sin(angle) * radius;
       features.push({
@@ -71,10 +68,7 @@ const generateGeoJSON = (districts) => {
     }
   });
 
-  return {
-    type: 'FeatureCollection',
-    features
-  };
+  return { type: 'FeatureCollection', features };
 };
 
 export default function DistrictHotspots() {
@@ -82,93 +76,57 @@ export default function DistrictHotspots() {
   const mapRef = useRef(null);
   
   const [selectedDistrict, setSelectedDistrict] = useState(null);
-  const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/dark-v11'); // Dark mode by default for snapchat glow
+  const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/dark-v11'); 
   const [showStyleMenu, setShowStyleMenu] = useState(false);
 
-  // Maximum value for scaling progress bars
   const maxCount = Math.max(...districtsData.map(d => d.count));
   const geojsonData = generateGeoJSON(districtsData);
 
-  // Initialize Mapbox Map
   useEffect(() => {
     if (!MAPBOX_TOKEN || !mapContainerRef.current) return;
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: mapStyle,
-      center: [76.25, 10.4], // Center of Kerala
+      center: [76.25, 10.4], 
       zoom: 7.1,
       minZoom: 6,
       maxZoom: 14
     });
 
     mapRef.current = map;
-
-    // Add navigation controls
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
 
     map.on('style.load', () => {
-      // Add GeoJSON source
       map.addSource('hotspots', {
         type: 'geojson',
         data: geojsonData
       });
 
-      // Snapchat-style heatmap layer
       map.addLayer({
         id: 'hotspots-heat',
         type: 'heatmap',
         source: 'hotspots',
         maxzoom: 15,
         paint: {
-          // Heatmap weight based on intensity
-          'heatmap-weight': [
-            'interpolate',
-            ['linear'],
-            ['get', 'intensity'],
-            0, 0,
-            6, 1.2
-          ],
-          // Heatmap intensity adjusts dynamically with zoom
-          'heatmap-intensity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            0, 1,
-            9, 3
-          ],
-          // Snapchat color scheme gradient: transparent -> blue -> green -> yellow -> orange -> red
+          'heatmap-weight': ['interpolate', ['linear'], ['get', 'intensity'], 0, 0, 6, 1.2],
+          'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 9, 3],
           'heatmap-color': [
             'interpolate',
             ['linear'],
             ['heatmap-density'],
             0, 'rgba(0, 0, 255, 0)',
-            0.15, 'rgba(56, 189, 248, 0.45)', // Blue
-            0.4, 'rgba(34, 197, 94, 0.7)',   // Green
-            0.65, 'rgba(234, 179, 8, 0.85)', // Yellow
-            0.85, 'rgba(249, 115, 22, 0.95)', // Orange
-            1.0, 'rgba(239, 68, 68, 1)'       // Red
+            0.15, 'rgba(56, 189, 248, 0.45)', 
+            0.4, 'rgba(34, 197, 94, 0.7)',   
+            0.65, 'rgba(234, 179, 8, 0.85)', 
+            0.85, 'rgba(249, 115, 22, 0.95)', 
+            1.0, 'rgba(239, 68, 68, 1)'       
           ],
-          // Heatmap radius adjusts with zoom
-          'heatmap-radius': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            0, 2,
-            9, 24
-          ],
-          // Heatmap fades as we zoom in close to individual report circles
-          'heatmap-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            7, 0.9,
-            14, 0.15
-          ]
+          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 9, 24],
+          'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0.9, 14, 0.15]
         }
       });
 
-      // Circle Layer for individual reports (visible at higher zoom levels)
       map.addLayer({
         id: 'hotspots-point',
         type: 'circle',
@@ -176,27 +134,12 @@ export default function DistrictHotspots() {
         minzoom: 8,
         paint: {
           'circle-radius': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            8, [
-              'interpolate',
-              ['linear'],
-              ['get', 'intensity'],
-              1, 4,
-              6, 9
-            ],
-            14, [
-              'interpolate',
-              ['linear'],
-              ['get', 'intensity'],
-              1, 10,
-              6, 22
-            ]
+            'interpolate', ['linear'], ['zoom'],
+            8, ['interpolate', ['linear'], ['get', 'intensity'], 1, 4, 6, 9],
+            14, ['interpolate', ['linear'], ['get', 'intensity'], 1, 10, 6, 22]
           ],
           'circle-color': [
-            'match',
-            ['get', 'category'],
+            'match', ['get', 'category'],
             'Potholes', '#ef4444',
             'Corruption', '#ec4899',
             'Electricity', '#f97316',
@@ -206,7 +149,7 @@ export default function DistrictHotspots() {
             'Waste Management', '#10b981',
             'Forest Fire', '#dc2626',
             'Landslide Risk', '#b45309',
-            '#ef4444' // default
+            '#ef4444'
           ],
           'circle-stroke-width': 2,
           'circle-stroke-color': '#ffffff',
@@ -215,7 +158,6 @@ export default function DistrictHotspots() {
       });
     });
 
-    // Interactivity: Click on individual points to view custom popups
     map.on('click', 'hotspots-point', (e) => {
       const coordinates = e.features[0].geometry.coordinates.slice();
       const { category, description, district } = e.features[0].properties;
@@ -236,20 +178,12 @@ export default function DistrictHotspots() {
         .addTo(map);
     });
 
-    // Pointer feedback
-    map.on('mouseenter', 'hotspots-point', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', 'hotspots-point', () => {
-      map.getCanvas().style.cursor = '';
-    });
+    map.on('mouseenter', 'hotspots-point', () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', 'hotspots-point', () => { map.getCanvas().style.cursor = ''; });
 
-    return () => {
-      map.remove();
-    };
+    return () => { map.remove(); };
   }, [mapStyle]);
 
-  // Click handler for list cards to pan map to district coordinates
   const handleDistrictClick = (d) => {
     setSelectedDistrict(d.name);
     
@@ -261,13 +195,9 @@ export default function DistrictHotspots() {
         duration: 1500
       });
 
-      // Remove existing popups
       const activePopups = document.getElementsByClassName('mapboxgl-popup');
-      while (activePopups[0]) {
-        activePopups[0].remove();
-      }
+      while (activePopups[0]) { activePopups[0].remove(); }
 
-      // Add fresh custom popup
       setTimeout(() => {
         if (!mapRef.current) return;
         new mapboxgl.Popup({ className: 'custom-mapbox-popup' })
@@ -284,22 +214,19 @@ export default function DistrictHotspots() {
           .addTo(mapRef.current);
       }, 1500);
     } else {
-      // Fallback Scroll viewport to the fallback map
       const mapViewport = document.getElementById('map-viewport-container');
-      if (mapViewport) {
-        mapViewport.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+      if (mapViewport) { mapViewport.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
     }
   };
 
   return (
-    <section className="w-full min-h-screen py-16 px-4 md:px-8 bg-[#fafbfc] antialiased">
-      {/* Custom Styles for Mapbox Popup overrides */}
+    // Fixed: Included id="map-section" right here to coordinate anchor scrolling transitions properly
+    <section id="map-section" className="w-full min-h-screen py-20 px-4 md:px-8 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 text-[rgb(10,10,10)] font-sans antialiased">
       <style>{`
         .mapboxgl-popup-content {
           border-radius: 16px !important;
           padding: 14px 16px !important;
-          box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 8px 16px -6px rgba(0, 0, 0, 0.06) !important;
+          box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08) !important;
           border: 1px solid rgba(226, 232, 240, 0.8) !important;
           background: rgba(255, 255, 255, 0.98) !important;
           backdrop-filter: blur(8px);
@@ -311,32 +238,22 @@ export default function DistrictHotspots() {
           top: 6px !important;
           right: 6px !important;
           border-radius: 50%;
-          outline: none !important;
         }
         .mapboxgl-popup-close-button:hover {
           background-color: #f1f5f9 !important;
-          color: #1e293b !important;
-        }
-        .mapboxgl-popup-tip {
-          border-top-color: rgba(255, 255, 255, 0.98) !important;
-          border-bottom-color: rgba(255, 255, 255, 0.98) !important;
         }
       `}</style>
 
       <div className="max-w-7xl mx-auto flex flex-col items-center">
-        
         {/* Header Section */}
         <div className="flex flex-col items-center text-center mb-12">
-          {/* Flame Badge */}
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200/50 rounded-full text-amber-700 text-xs font-semibold tracking-wide mb-4 shadow-sm">
             <HiOutlineFire className="w-4 h-4 text-amber-500 fill-amber-500/20 animate-pulse" />
             <span>Live Issue Hotspots</span>
           </div>
-
           <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-4">
             Kerala District Hotspots
           </h1>
-
           <p className="text-sm md:text-base text-slate-500 font-medium max-w-xl mx-auto leading-relaxed">
             See where citizens are raising concerns across all 14 districts. Tap on any bubble to view details.
           </p>
@@ -347,82 +264,38 @@ export default function DistrictHotspots() {
           
           {/* LEFT COLUMN: Map Card Viewport */}
           <div id="map-viewport-container" className="lg:col-span-5 flex flex-col w-full">
-            
-            {/* Map Frame Card */}
             <div className="w-full relative aspect-[3/4] bg-white border-8 border-white shadow-[0_15px_40px_-15px_rgba(0,0,0,0.06)] rounded-[32px] overflow-hidden flex flex-col">
-              
               {MAPBOX_TOKEN ? (
                 <>
-                  {/* Map Element */}
                   <div ref={mapContainerRef} className="w-full flex-1" />
-
-                  {/* Style Toggle Control */}
                   <div className="absolute top-4 left-4 z-10">
                     <button 
                       onClick={() => setShowStyleMenu(!showStyleMenu)}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-white/95 backdrop-blur-md border border-slate-100 shadow-sm rounded-xl text-slate-700 hover:text-slate-900 font-semibold text-xs transition-colors duration-200"
+                      className="flex items-center gap-1.5 px-3 py-2 bg-white/95 backdrop-blur-md border border-slate-100 shadow-sm rounded-xl text-slate-700 hover:text-slate-900 font-semibold text-xs"
                     >
                       <FiLayers className="w-3.5 h-3.5" />
                       <span>Map Layers</span>
                     </button>
                     {showStyleMenu && (
                       <div className="absolute top-full left-0 mt-2 w-40 bg-white border border-slate-100 shadow-md rounded-xl p-1 z-20">
-                        <button 
-                          onClick={() => { setMapStyle('mapbox://styles/mapbox/dark-v11'); setShowStyleMenu(false); }}
-                          className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg transition-colors ${mapStyle.includes('dark') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-50'}`}
-                        >
-                          Snapchat Dark
-                        </button>
-                        <button 
-                          onClick={() => { setMapStyle('mapbox://styles/mapbox/light-v11'); setShowStyleMenu(false); }}
-                          className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg transition-colors ${mapStyle.includes('light') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-50'}`}
-                        >
-                          Minimal Light
-                        </button>
-                        <button 
-                          onClick={() => { setMapStyle('mapbox://styles/mapbox/streets-v12'); setShowStyleMenu(false); }}
-                          className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg transition-colors ${mapStyle.includes('streets') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-50'}`}
-                        >
-                          Streets Style
-                        </button>
+                        <button onClick={() => { setMapStyle('mapbox://styles/mapbox/dark-v11'); setShowStyleMenu(false); }} className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${mapStyle.includes('dark') ? 'bg-slate-100 text-slate-900' : 'text-slate-600'}`}>Snapchat Dark</button>
+                        <button onClick={() => { setMapStyle('mapbox://styles/mapbox/light-v11'); setShowStyleMenu(false); }} className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${mapStyle.includes('light') ? 'bg-slate-100 text-slate-900' : 'text-slate-600'}`}>Minimal Light</button>
+                        <button onClick={() => { setMapStyle('mapbox://styles/mapbox/streets-v12'); setShowStyleMenu(false); }} className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${mapStyle.includes('streets') ? 'bg-slate-100 text-slate-900' : 'text-slate-600'}`}>Streets Style</button>
                       </div>
                     )}
                   </div>
                 </>
               ) : (
-                /* Fallback Viewport if Mapbox Token is Missing */
                 <div className="w-full flex-1 bg-slate-50 relative flex flex-col justify-center items-center p-6 overflow-hidden">
-                  
-                  {/* High Quality Kerala Boundary Map Image */}
                   <div className="relative w-auto h-full max-h-[380px] flex justify-center items-center">
-                    <img 
-                      src="https://upload.wikimedia.org/wikipedia/commons/1/18/Districts_of_Kerala.png" 
-                      alt="Kerala Districts Fallback"
-                      className="w-auto h-full object-contain opacity-80 select-none mix-blend-multiply transition-all duration-300"
-                    />
-
-                    {/* Glowing static overlay dots mapping districts */}
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/18/Districts_of_Kerala.png" alt="Kerala Districts Fallback" className="w-auto h-full object-contain opacity-80 select-none mix-blend-multiply" />
                     {districtsData.map((d) => (
-                      <div 
-                        key={d.rank} 
-                        className="absolute z-10 cursor-pointer flex flex-col items-center group transition-transform duration-200 hover:scale-110"
-                        style={{ top: d.top, left: d.left }}
-                        onClick={() => setSelectedDistrict(d.name)}
-                      >
-                        {/* Glowing ring */}
+                      <div key={d.rank} className="absolute z-10 cursor-pointer flex flex-col items-center group transition-transform duration-200 hover:scale-110" style={{ top: d.top, left: d.left }} onClick={() => setSelectedDistrict(d.name)}>
                         <div className="relative flex h-4 w-4 items-center justify-center">
-                          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                            d.name === selectedDistrict ? 'bg-red-400 ring-4 ring-red-400/20' : 'bg-orange-400'
-                          }`}></span>
-                          <span className={`relative inline-flex rounded-full h-3 w-3 shadow-md border-2 border-white ${
-                            d.name === selectedDistrict ? 'bg-red-600' : 'bg-orange-500'
-                          }`}></span>
+                          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${d.name === selectedDistrict ? 'bg-red-400 ring-4 ring-red-400/20' : 'bg-orange-400'}`}></span>
+                          <span className={`relative inline-flex rounded-full h-3 w-3 shadow-md border-2 border-white ${d.name === selectedDistrict ? 'bg-red-600' : 'bg-orange-500'}`}></span>
                         </div>
-
-                        {/* Hover Popup Overlay tooltips */}
-                        <div className={`absolute bottom-full mb-2 whitespace-nowrap bg-slate-900 text-white rounded-lg px-2 py-1 text-[10px] font-bold shadow-lg opacity-0 transition-opacity pointer-events-none group-hover:opacity-100 ${
-                          d.name === selectedDistrict ? 'opacity-100' : ''
-                        }`}>
+                        <div className={`absolute bottom-full mb-2 whitespace-nowrap bg-slate-900 text-white rounded-lg px-2 py-1 text-[10px] font-bold shadow-lg opacity-0 transition-opacity pointer-events-none group-hover:opacity-100 ${d.name === selectedDistrict ? 'opacity-100' : ''}`}>
                           <div className="text-center">
                             <div>{d.name}</div>
                             <div className="text-red-400 font-extrabold">{d.reports}</div>
@@ -432,22 +305,17 @@ export default function DistrictHotspots() {
                       </div>
                     ))}
                   </div>
-
-                  {/* Warning banner indicating Mapbox setup */}
                   <div className="absolute inset-x-4 bottom-4 bg-white/95 backdrop-blur-xs border border-amber-200 shadow-md rounded-2xl p-4 flex gap-3 z-20">
                     <HiOutlineInformationCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                     <div>
                       <h4 className="text-xs font-bold text-slate-800">Mapbox Token Required</h4>
-                      <p className="text-[10px] text-slate-500 leading-normal mt-0.5">
-                        Please insert your `VITE_MAPBOX_ACCESS_TOKEN` in the `.env` file to activate the live Snapchat-style map.
-                      </p>
+                      <p className="text-[10px] text-slate-500 leading-normal mt-0.5">Please insert your `VITE_MAPBOX_ACCESS_TOKEN` in the `.env` file to activate the live map.</p>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Heatmap Intensity bar beneath the map */}
             <div className="mt-6 px-2">
               <span className="block text-xs font-bold text-slate-700 mb-2">Heatmap Intensity</span>
               <div className="w-full h-2.5 rounded-full bg-gradient-to-r from-sky-400 via-green-400 to-red-500 shadow-inner" />
@@ -457,21 +325,15 @@ export default function DistrictHotspots() {
                 <span>High</span>
               </div>
             </div>
-
           </div>
 
           {/* RIGHT COLUMN: Districts list */}
           <div className="lg:col-span-7 flex flex-col w-full">
             <div className="flex items-center justify-between mb-6 px-1">
-              <h3 className="text-lg font-extrabold text-slate-850">
-                Top Districts by Active Issues
-              </h3>
-              <span className="text-xs text-slate-400 font-semibold">
-                14 Districts Active
-              </span>
+              <h3 className="text-lg font-extrabold text-slate-850">Top Districts by Active Issues</h3>
+              <span className="text-xs text-slate-400 font-semibold">14 Districts Active</span>
             </div>
 
-            {/* Scrollable list containing all 14 districts */}
             <div className="flex flex-col gap-3 max-h-[580px] overflow-y-auto pr-2 custom-scrollbar">
               {districtsData.map((d) => (
                 <DistrictHotspotCard
@@ -490,24 +352,13 @@ export default function DistrictHotspots() {
           </div>
 
         </div>
-
       </div>
 
-      {/* Styled scrollbar setup */}
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #e2e8f0;
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #cbd5e1;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
       `}</style>
     </section>
   );

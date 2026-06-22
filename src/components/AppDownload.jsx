@@ -5,13 +5,14 @@ import { FiArrowRight } from 'react-icons/fi';
 
 export default function AppDownload() {
   return (
-    <div className="w-full flex flex-col min-h-screen overflow-x-hidden">
+    <div className="w-full flex flex-col overflow-x-hidden">
       
       {/* =========================================================
           SECTION 1: THE APP DOWNLOAD PANEL
           ========================================================= */}
-      <section className="w-full bg-white py-12 sm:py-20 px-4 sm:px-6 lg:px-8 antialiased">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      {/* Added id="about" to handle header smooth scroll targeting */}
+      <section id="about" className="w-full min-h-[660px] py-[80px] px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#eff6ff] via-[#faf5ff] to-[#fdf2f8] text-[16px] font-sans font-normal leading-normal text-[rgb(10,10,10)] border-0 border-solid border-[rgba(0,0,0,0.1)] block box-border antialiased flex items-center">
+        <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           
           {/* Content Column: Text Copy, Badges, and Stats */}
           <div className="order-2 lg:order-1 lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left">
@@ -52,7 +53,7 @@ export default function AppDownload() {
             </div>
 
             {/* Metrics Counter Display Layout */}
-            <div className="grid grid-cols-3 gap-4 sm:gap-6 pt-6 border-t border-slate-100 w-full max-w-md">
+            <div className="grid grid-cols-3 gap-4 sm:gap-6 pt-6 border-t border-slate-200/60 w-full max-w-md">
               <div>
                 <div className="flex items-center justify-center lg:justify-start space-x-1">
                   <span className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">4.8</span>
@@ -70,42 +71,51 @@ export default function AppDownload() {
               </div>
             </div>
           </div>
+{/* Mockup Column */}
+<div className="order-1 lg:order-2 lg:col-span-5 flex justify-center items-center">
 
-          {/* Mockup Column: Shows at top on mobile screen viewports */}
-          <div className="order-1 lg:order-2 lg:col-span-5 flex justify-center items-center relative py-4 sm:py-8">
-            <div className="relative w-52 sm:w-64 aspect-[1/2] bg-gradient-to-b from-slate-50 to-indigo-50/40 border-[6px] sm:border-[8px] border-white rounded-[36px] sm:rounded-[44px] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)] lg:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col items-center justify-center p-5 text-center transform rotate-1 lg:rotate-2 hover:rotate-0 transition-transform duration-500 ease-out">
-              
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl shadow-lg shadow-indigo-100 flex items-center justify-center mb-4 sm:mb-6">
-                <HiMegaphone className="w-6 h-6 sm:w-7 sm:h-7 text-white -rotate-12" />
-              </div>
-              
-              <h4 className="text-sm sm:text-base font-extrabold text-slate-800 tracking-tight mb-1">
-                CivicCare App
-              </h4>
-              <p className="text-[11px] sm:text-xs text-slate-400 font-semibold leading-relaxed px-2 sm:px-4">
-                Your voice, your community
-              </p>
-            </div>
-          </div>
+  {/* Phone Frame */}
+<div className="w-[256px] h-[500px] p-[12px] border-[4px] border-gray-200 rounded-[24px] bg-white shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] relative transition-all duration-500 hover:-translate-y-3 hover:rotate-2 hover:shadow-[0px_35px_70px_-12px_rgba(0,0,0,0.3)]">
+      <div className="w-full h-full rounded-[16px] bg-gradient-to-br from-[rgb(219,234,254)] to-[rgb(243,232,255)] flex flex-col items-center justify-center text-center">
 
-        </div>
-      </section>
+      {/* App Logo */}
+      <div className="w-[80px] h-[80px] p-[16px] rounded-[16px] bg-gradient-to-br from-[rgb(43,127,255)] to-[rgb(152,16,250)] flex items-center justify-center mb-[16px]">
+        <HiMegaphone className="w-10 h-10 text-white" />
+      </div>
 
+      <h4 className="text-[20px] font-bold text-slate-800 mb-2">
+        CivicCare App
+      </h4>
+
+      <p className="text-[14px] text-slate-500 font-medium px-6">
+        Your voice, your community
+      </p>
+
+    </div>
+  </div>
+
+</div>
+
+{/* Close the grid container */}
+</div>
+
+{/* Close Section 1 */}
+</section>
       {/* =========================================================
           SECTION 2: READY TO MAKE A DIFFERENCE CTA BANNER
           ========================================================= */}
-      <section className="w-full bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-pink-500 py-16 sm:py-24 px-4 text-center antialiased">
-        <div className="max-w-4xl mx-auto flex flex-col items-center px-2">
+      <section className="w-full min-h-[428px] py-[96px] px-4 bg-gradient-to-r from-[#155dfc] via-[#9810fa] to-[#e60076] text-[16px] font-sans font-normal leading-normal text-[rgb(10,10,10)] border-0 border-solid border-[rgba(0,0,0,0.1)] block box-border antialiased flex items-center text-center">
+        <div className="max-w-4xl mx-auto w-full flex flex-col items-center px-2">
           
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
             Ready to Make a Difference?
           </h2>
           
-          <p className="text-white/80 font-medium text-xs sm:text-sm lg:text-base leading-relaxed max-w-2xl mb-8">
+          <p className="text-white/90 font-medium text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl mb-10">
             Join thousands of citizens already creating positive change in their communities.
           </p>
 
-          <button className="inline-flex items-center space-x-2 px-5 sm:px-6 py-3 bg-white hover:bg-slate-50 text-indigo-600 font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all duration-200 active:scale-95 w-full sm:w-auto justify-center">
+          <button className="inline-flex items-center space-x-2.5 px-6 sm:px-8 py-3.5 bg-white hover:bg-slate-50 text-indigo-600 font-bold text-sm sm:text-base rounded-xl shadow-md transition-all duration-200 active:scale-95 w-full sm:w-auto justify-center cursor-pointer">
             <span>Get Started Now</span>
             <FiArrowRight className="w-4 h-4 stroke-[2.5]" />
           </button>

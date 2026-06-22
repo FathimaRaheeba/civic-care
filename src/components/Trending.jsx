@@ -1,5 +1,4 @@
 import React from 'react';
-// Correct Heroicons v2 icon name replacement
 import { HiArrowTrendingUp } from 'react-icons/hi2'; 
 import TrendingCard from './TrendingCard';
 
@@ -29,16 +28,16 @@ export default function Trending() {
   ];
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 sm:p-6 bg-white">
-      {/* Title Segment using the verified HiArrowTrendingUp icon */}
-      <div className="flex items-center space-x-2 mb-6">
-        <HiArrowTrendingUp className="w-6 h-6 text-red-500" />
-        <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+    <div className="w-full flex flex-col">
+      {/* Title Segment perfectly heights matched to Recent Issues title */}
+      <div className="flex items-center gap-2 mb-6 h-[33px]">
+        <HiArrowTrendingUp className="w-[22px] h-[22px] text-[#ef4444]" />
+        <h2 className="text-[22px] font-bold text-[#0f172a] tracking-tight">
           Trending
         </h2>
       </div>
 
-      {/* Render Stack Grid mapping over TrendingCard child blocks */}
+      {/* Render Stack Loop */}
       <div className="flex flex-col space-y-4">
         {trendingData.map((card) => (
           <TrendingCard
