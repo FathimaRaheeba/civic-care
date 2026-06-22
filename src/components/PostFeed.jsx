@@ -10,78 +10,9 @@ import {
 import { FiDroplet } from 'react-icons/fi';
 import LatestPost from './LatestPost';
 
-// Full list of high-fidelity posts from the mockup images
-const initialPostsData = [
-  {
-    id: 1,
-    tag: "bribe",
-    categoryColor: "bg-rose-50 text-rose-500 border-rose-100/60",
-    title: "Bribery demand at Municipal Office",
-    text: "Official demanded bribe for issuing building permit. This corruption needs to stop immediately.",
-    author: "Anonymous User",
-    date: "Jun 1",
-    location: "City Municipal Office",
-    image: null,
-    initialLikes: 89,
-    commentCount: 0
-  },
-  {
-    id: 2,
-    tag: "electricity",
-    categoryColor: "bg-yellow-50 text-[#B7791F] border-yellow-100/60",
-    title: "Streetlights not working for months",
-    text: "Multiple streetlights on our road have been non-functional for over 3 months, creating safety issues.",
-    author: "David Chen",
-    date: "Jun 1",
-    location: "Park Avenue",
-    image: "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=800&auto=format&fit=crop", 
-    initialLikes: 54,
-    commentCount: 0
-  },
-  {
-    id: 3,
-    tag: "garbage",
-    categoryColor: "bg-green-50 text-green-600 border-green-100/60",
-    title: "Garbage not collected for 2 weeks",
-    text: "Municipal workers have not collected garbage from our street for over two weeks. Health hazard.",
-    author: "Mike Wilson",
-    date: "May 30",
-    location: "Oak Street",
-    image: "https://images.unsplash.com/photo-1618477462146-050d2767eac4?q=80&w=800&auto=format&fit=crop", 
-    initialLikes: 67,
-    commentCount: 1
-  },
-  {
-    id: 4,
-    tag: "water",
-    categoryColor: "bg-blue-50 text-blue-500 border-blue-100/60",
-    title: "Water supply irregular in residential area",
-    text: "Water supply has been irregular for the past week. Residents are facing difficulties.",
-    author: "Sarah Johnson",
-    date: "May 29",
-    location: "Green Valley Apartments",
-    image: null,
-    initialLikes: 32,
-    commentCount: 0
-  },
-  {
-    id: 5,
-    tag: "pothole",
-    categoryColor: "bg-orange-50 text-orange-500 border-orange-100/60",
-    title: "Large pothole on Main Street causing accidents",
-    text: "There is a dangerous pothole near the intersection that has caused multiple vehicle damages. Immediate attention needed.",
-    author: "John Citizen",
-    date: "May 28",
-    location: "Main Street & 5th Avenue",
-    image: "https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=800&auto=format&fit=crop", 
-    initialLikes: 45,
-    commentCount: 2
-  }
-];
 
 export default function PostFeed({ posts: propPosts }) {
-  const [localPosts] = useState(initialPostsData);
-  const posts = propPosts || localPosts;
+  const posts = propPosts ;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');

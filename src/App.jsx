@@ -6,6 +6,7 @@ import TrendingNow from './components/TrendingNow';
 import TrendingTopics from './components/TrendingTopics';
 import NearbyUpdates from './components/NearbyUpdates';
 
+
 import LandingPage from './pages/LandingPage';
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
