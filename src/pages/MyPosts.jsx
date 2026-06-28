@@ -86,18 +86,20 @@ export default function MyPosts() {
   };
 
   // Load user concerns from localStorage
-  const loadConcerns = () => {
-    const saved = localStorage.getItem('civic_care_user_concerns');
-    const loaded = saved ? JSON.parse(saved) : [];
-    // Ensure all posts have a default status and priority if they don't
-    const normalized = loaded.map(post => ({
-      ...post,
-      status: post.status || 'Pending',
-      priority: post.priority || 'medium priority'
-    }));
-    setUserConcerns(normalized);
-  };
+const loadConcerns = () => {
+  const saved = localStorage.getItem('civic_care_user_concerns');
+  const loaded = saved ? JSON.parse(saved) : [];
 
+  console.log("Loaded Posts:", loaded);
+
+  const normalized = loaded.map(post => ({
+    ...post,
+    status: post.status || 'Pending',
+    priority: post.priority || 'medium priority'
+  }));
+
+  setUserConcerns(normalized);
+};
   useEffect(() => {
     loadConcerns();
   }, []);
@@ -162,101 +164,154 @@ export default function MyPosts() {
     <div className="w-full min-h-screen bg-[linear-gradient(to_right_bottom_in_oklab,rgb(239,246,255)_0%,rgb(250,245,255)_50%,rgb(253,242,248)_100%)] flex flex-col items-center justify-start box-border relative text-[16px] font-sans font-normal leading-normal text-[rgb(0,0,0)] antialiased">
       <UserHeader onMenuClick={() => setIsDrawerOpen(true)} onPostClick={() => setIsReportModalOpen(true)} />
 
-      <main className="w-full max-w-[1324px] px-4 sm:px-6 lg:px-8 py-10 pb-[112px] md:pb-[48px] flex flex-col items-start justify-start text-left">
-        
+<main className="w-full max-w-[1324px] px-4 sm:px-6 lg:px-8 pt-2 pb-[112px] md:pb-[48px] flex flex-col items-start justify-start text-left">        
         {/* Title Block */}
         <div className="mb-8">
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">My Posts</h1>
+<h1
+  className="
+    w-full
+    lg:h-[36px]
+    mb-2
+    text-[20px] sm:text-[22px] lg:text-[24px]
+    font-medium
+    leading-normal
+    text-[rgb(10,10,10)]
+    font-sans
+    flex items-center
+  "
+>
+  My Posts
+</h1>
           <p className="text-slate-500 font-medium mt-1">
             Manage all your reported concerns and track their progress
           </p>
         </div>
+{/* Custom Tab Filters */}
+<div className="w-full overflow-x-auto scrollbar-hide">
+  <div className="flex gap-2 min-w-max">
 
-        {/* Metrics Row */}
-        <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {/* Total Posts */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs flex flex-col justify-center">
-            <span className="text-3xl font-black text-slate-800 tracking-tight">{totalCount}</span>
-            <span className="text-sm font-semibold text-slate-400 mt-1">Total Posts</span>
-          </div>
+    {/* All Posts */}
+    <button
+      onClick={() => setActiveTab('All')}
+      className={`flex items-center justify-center gap-2
+      h-9
+      px-4
+      rounded-[10px]
+      text-xs sm:text-sm
+      font-medium
+      whitespace-nowrap
+      transition-all duration-200
+      ${
+        activeTab === 'All'
+          ? 'bg-gradient-to-r from-[#155DFC] to-[#9810FA] text-white shadow-lg shadow-black/10'
+          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+      }`}
+    >
+      <HiOutlineEye className="w-4 h-4 shrink-0" />
+      <span>All Posts</span>
+      <span
+        className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+          activeTab === 'All'
+            ? 'bg-white/20 text-white'
+            : 'bg-slate-100 text-slate-500'
+        }`}
+      >
+        {totalCount}
+      </span>
+    </button>
 
-          {/* Pending */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs flex flex-col justify-center">
-            <span className="text-3xl font-black text-amber-500 tracking-tight">{pendingCount}</span>
-            <span className="text-sm font-semibold text-slate-400 mt-1">Pending</span>
-          </div>
+    {/* Pending */}
+    <button
+      onClick={() => setActiveTab('Pending')}
+      className={`flex items-center justify-center gap-2
+      h-9
+      px-4
+      rounded-[10px]
+      text-xs sm:text-sm
+      font-medium
+      whitespace-nowrap
+      transition-all duration-200
+      ${
+        activeTab === 'Pending'
+          ? 'bg-gradient-to-r from-[#155DFC] to-[#9810FA] text-white shadow-lg shadow-black/10'
+          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+      }`}
+    >
+      <HiOutlineExclamationCircle className="w-4 h-4 shrink-0" />
+      <span>Pending</span>
+      <span
+        className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+          activeTab === 'Pending'
+            ? 'bg-white/20 text-white'
+            : 'bg-slate-100 text-slate-500'
+        }`}
+      >
+        {pendingCount}
+      </span>
+    </button>
 
-          {/* Ongoing */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs flex flex-col justify-center">
-            <span className="text-3xl font-black text-blue-500 tracking-tight">{ongoingCount}</span>
-            <span className="text-sm font-semibold text-slate-400 mt-1">Ongoing</span>
-          </div>
+    {/* Ongoing */}
+    <button
+      onClick={() => setActiveTab('Ongoing')}
+      className={`flex items-center justify-center gap-2
+      h-9
+      px-4
+      rounded-[10px]
+      text-xs sm:text-sm
+      font-medium
+      whitespace-nowrap
+      transition-all duration-200
+      ${
+        activeTab === 'Ongoing'
+          ? 'bg-gradient-to-r from-[#155DFC] to-[#9810FA] text-white shadow-lg shadow-black/10'
+          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+      }`}
+    >
+      <HiOutlineArrowPath className="w-4 h-4 shrink-0" />
+      <span>Ongoing</span>
+      <span
+        className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+          activeTab === 'Ongoing'
+            ? 'bg-white/20 text-white'
+            : 'bg-slate-100 text-slate-500'
+        }`}
+      >
+        {ongoingCount}
+      </span>
+    </button>
 
-          {/* Resolved */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs flex flex-col justify-center">
-            <span className="text-3xl font-black text-emerald-500 tracking-tight">{resolvedCount}</span>
-            <span className="text-sm font-semibold text-slate-400 mt-1">Resolved</span>
-          </div>
-        </div>
+    {/* Resolved */}
+    <button
+      onClick={() => setActiveTab('Resolved')}
+      className={`flex items-center justify-center gap-2
+      h-9
+      px-4
+      rounded-[10px]
+      text-xs sm:text-sm
+      font-medium
+      whitespace-nowrap
+      transition-all duration-200
+      ${
+        activeTab === 'Resolved'
+          ? 'bg-gradient-to-r from-[#155DFC] to-[#9810FA] text-white shadow-lg shadow-black/10'
+          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+      }`}
+    >
+      <HiOutlineCheckCircle className="w-4 h-4 shrink-0" />
+      <span>Resolved</span>
+      <span
+        className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+          activeTab === 'Resolved'
+            ? 'bg-white/20 text-white'
+            : 'bg-slate-100 text-slate-500'
+        }`}
+      >
+        {resolvedCount}
+      </span>
+    </button>
 
-        {/* Custom Tab Filters */}
-        <div className="flex flex-nowrap overflow-x-auto gap-2.5 mb-6 bg-slate-100/50 p-1.5 rounded-2xl border border-slate-200/40 w-full sm:w-auto scrollbar-hide select-none">
-          {/* All Posts tab button */}
-          <button
-            onClick={() => setActiveTab('All')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-extrabold transition-all cursor-pointer ${
-              activeTab === 'All'
-                ? 'bg-gradient-to-r from-[#155DFC] to-[#9810FA] text-white shadow-md'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <HiOutlineEye className="w-4.5 h-4.5" />
-            <span>All Posts</span>
-            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${activeTab === 'All' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'}`}>{totalCount}</span>
-          </button>
-
-          {/* Pending tab button */}
-          <button
-            onClick={() => setActiveTab('Pending')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-extrabold transition-all cursor-pointer ${
-              activeTab === 'Pending'
-                ? 'bg-gradient-to-r from-[#155DFC] to-[#9810FA] text-white shadow-md'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <HiOutlineExclamationCircle className={`w-4.5 h-4.5 ${activeTab === 'Pending' ? 'text-white' : 'text-amber-500'}`} />
-            <span>Pending</span>
-            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${activeTab === 'Pending' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'}`}>{pendingCount}</span>
-          </button>
-
-          {/* Ongoing tab button */}
-          <button
-            onClick={() => setActiveTab('Ongoing')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-extrabold transition-all cursor-pointer ${
-              activeTab === 'Ongoing'
-                ? 'bg-gradient-to-r from-[#155DFC] to-[#9810FA] text-white shadow-md'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <HiOutlineArrowPath className={`w-4.5 h-4.5 ${activeTab === 'Ongoing' ? 'text-white' : 'text-blue-500'}`} />
-            <span>Ongoing</span>
-            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${activeTab === 'Ongoing' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'}`}>{ongoingCount}</span>
-          </button>
-
-          {/* Resolved tab button */}
-          <button
-            onClick={() => setActiveTab('Resolved')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-extrabold transition-all cursor-pointer ${
-              activeTab === 'Resolved'
-                ? 'bg-gradient-to-r from-[#155DFC] to-[#9810FA] text-white shadow-md'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <HiOutlineCheckCircle className={`w-4.5 h-4.5 ${activeTab === 'Resolved' ? 'text-white' : 'text-emerald-500'}`} />
-            <span>Resolved</span>
-            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${activeTab === 'Resolved' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'}`}>{resolvedCount}</span>
-          </button>
-        </div>
+  </div>
+</div>
 
         {/* Post Items Listing Grid */}
         <div className="w-full space-y-4">
@@ -303,6 +358,15 @@ export default function MyPosts() {
                   <p className="text-slate-500 font-medium text-sm leading-relaxed mb-5 max-w-4xl">
                     {post.description}
                   </p>
+               {post.photo && (
+  <div className="mb-5">
+    <img
+      src={post.photo}
+      alt="Concern"
+      className="max-w-full h-auto rounded-2xl border border-slate-200 shadow-sm"
+    />
+  </div>
+)}
 
                   {/* Metadata and Actions Section */}
                   <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between pt-5 border-t border-slate-100">
