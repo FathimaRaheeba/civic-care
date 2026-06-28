@@ -1,168 +1,278 @@
 import React, { useState } from 'react';
-import { 
-  HiOutlineHeart, 
-  HiHeart, 
-  HiOutlineChatBubbleLeft, 
-  HiOutlineShare, 
-  HiOutlineMap, 
-  HiPaperAirplane 
+import {
+  HiOutlineHeart,
+  HiHeart,
+  HiOutlineChatBubbleLeft,
+  HiOutlineShare,
+  HiOutlineMap,
+  HiPaperAirplane,
 } from 'react-icons/hi2';
 
-export default function LatestPost({ tag, categoryColor, title, text, author, date, location, image, initialLikes, commentCount }) {
-  const avatarLetter = author ? author.charAt(0) : 'U';
+export default function LatestPost({
+  tag,
+  categoryColor,
+  title,
+  text,
+  author,
+  date,
+  location,
+  image,
+  initialLikes,
+  commentCount,
+}) {
+  const avatarLetter = author ? author.charAt(0).toUpperCase() : 'U';
 
-  // 1. Interaction & Engagement States
   const [liked, setLiked] = useState(false);
-  const [likes, setLikes] = useState(parseInt(initialLikes) || 0);
+  const [likes, setLikes] = useState(Number(initialLikes) || 0);
   const [showComments, setShowComments] = useState(false);
+
   const [comments, setComments] = useState(
-    commentCount > 0 
+    commentCount > 0
       ? [
           {
             author: 'Current User',
             date: '21/06/2026',
             text: 'hiiii',
-            avatarBg: 'bg-[#00C853]'
-          }
+            avatarBg: 'bg-[#00C853]',
+          },
         ]
       : []
   );
 
   const handleLike = () => {
     if (liked) {
-      setLikes(prev => prev - 1);
+      setLikes((prev) => prev - 1);
     } else {
-      setLikes(prev => prev + 1);
+      setLikes((prev) => prev + 1);
     }
     setLiked(!liked);
   };
 
-  const handleCommentSubmit = (e) => {
-    e.preventDefault();
-    const input = e.target.commentText;
-    const textContent = input.value.trim();
-    if (!textContent) return;
-
-    const newComment = {
-      author: 'Fathima', 
-      date: new Date().toLocaleDateString('en-GB'),
-      text: textContent,
-      avatarBg: 'bg-gradient-to-br from-[#155DFC] to-[#9810FA]'
+  const handleShare = async () => {
+    const shareData = {
+      title,
+      text,
+      url: window.location.href,
     };
 
-    setComments([...comments, newComment]);
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {}
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      alert('Post link copied to clipboard!');
+    }
+  };
+
+  const handleCommentSubmit = (e) => {
+    e.preventDefault();
+
+    const input = e.target.commentText;
+    const value = input.value.trim();
+
+    if (!value) return;
+
+    setComments([
+      ...comments,
+      {
+        author: 'Fathima',
+        date: new Date().toLocaleDateString('en-GB'),
+        text: value,
+        avatarBg: 'bg-gradient-to-br from-[#155DFC] to-[#9810FA]',
+      },
+    ]);
+
     input.value = '';
   };
 
   return (
-    <div className="w-full bg-white rounded-3xl border border-slate-100 p-6 shadow-sm flex flex-col text-left">
-      
-      {/* SECTION 1: Header Meta Info */}
-      <div className="flex items-center justify-between w-full mb-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm select-none">
+    <div className="w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 lg:p-6">
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#155DFC] to-[#9810FA] text-white flex items-center justify-center font-bold shrink-0">
             {avatarLetter}
           </div>
-          <div>
-            <h4 className="text-sm font-bold text-slate-900">{author}</h4>
-            <p className="text-[11px] text-slate-400 font-semibold">{date} • {location}</p>
+
+          <div className="min-w-0">
+            <h4 className="font-bold text-slate-900 truncate">
+              {author}
+            </h4>
+
+            <p className="text-xs text-slate-500 truncate">
+              {date} {location && `• ${location}`}
+            </p>
           </div>
         </div>
-        <span className={`px-3 py-1 text-[11px] font-bold rounded-full border ${categoryColor} uppercase tracking-wider`}>
+
+        <span
+          className={`self-start sm:self-auto px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase border ${categoryColor}`}
+        >
           {tag}
         </span>
       </div>
 
-      {/* SECTION 2: Text Content Body */}
-      <div className="space-y-1">
-        <h3 className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">{title}</h3>
-        <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">{text}</p>
+      {/* Content */}
+
+      <div className="mt-4">
+        <h3 className="text-lg font-bold text-slate-900 leading-snug">
+          {title}
+        </h3>
+
+        <p className="mt-2 text-sm text-slate-600 leading-7 break-words">
+          {text}
+        </p>
       </div>
 
-      {/* SECTION 3: Optional Image Attachment */}
+      {/* Image */}
+
       {image && (
-        <div className="w-full mt-4 rounded-2xl overflow-hidden border border-slate-100 max-h-[320px]">
-          <img src={image} alt="Attachment" className="w-full h-full object-cover" />
+        <div className="mt-4 overflow-hidden rounded-xl border border-slate-200">
+          <img
+            src={image}
+            alt=""
+            className="w-full max-h-[420px] object-cover"
+          />
         </div>
       )}
 
-      {/* SECTION 4: Integrated Post Action Toolbar */}
-      <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-4 text-slate-500 text-xs font-semibold select-none">
-        <div className="flex items-center space-x-6">
-          
-          {/* Like/Upvote Trigger */}
-          <button 
+      {/* Action Buttons */}
+
+      <div className="mt-5 border-t border-slate-200 pt-4 flex flex-wrap items-center justify-between gap-4">
+
+        <div className="flex flex-wrap items-center gap-4">
+
+          <button
             onClick={handleLike}
-            className={`flex items-center space-x-2 hover:text-rose-600 transition-colors duration-200 cursor-pointer ${liked ? 'text-rose-600' : ''}`}
+            className={`flex items-center gap-2 transition ${
+              liked
+                ? 'text-rose-600'
+                : 'text-slate-500 hover:text-rose-600'
+            }`}
           >
-            {liked ? <HiHeart className="w-4 h-4 text-rose-500 fill-rose-500" /> : <HiOutlineHeart className="w-4 h-4 stroke-[2.2]" />}
-            <span>{likes}</span>
+            {liked ? (
+              <HiHeart className="w-5 h-5" />
+            ) : (
+              <HiOutlineHeart className="w-5 h-5" />
+            )}
+
+            <span className="text-sm font-semibold">{likes}</span>
           </button>
 
-          {/* Comments Toggle Trigger */}
-          <button 
+          <button
             onClick={() => setShowComments(!showComments)}
-            className="flex items-center space-x-2 hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+            className="flex items-center gap-2 text-slate-500 hover:text-blue-600 transition"
           >
-            <HiOutlineChatBubbleLeft className="w-4 h-4 stroke-[2.2]" />
-            <span>{comments.length}</span>
+            <HiOutlineChatBubbleLeft className="w-5 h-5" />
+            <span className="text-sm font-semibold">
+              {comments.length}
+            </span>
           </button>
 
-          {/* Share Trigger */}
-          <button className="flex items-center space-x-2 hover:text-purple-600 transition-colors duration-200 cursor-pointer">
-            <HiOutlineShare className="w-4 h-4 stroke-[2.2]" />
-            <span>Share</span>
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-2 text-slate-500 hover:text-purple-600 transition"
+          >
+            <HiOutlineShare className="w-5 h-5" />
+            <span className="text-sm font-semibold">
+              Share
+            </span>
           </button>
         </div>
 
-        {/* View on Map Anchor Button */}
-        <button className="flex items-center space-x-1.5 hover:text-slate-800 transition-colors duration-200 cursor-pointer">
-          <HiOutlineMap className="w-4 h-4 stroke-[2.2] text-slate-400" />
-          <span>View on Map</span>
+        <button
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition"
+        >
+          <HiOutlineMap className="w-5 h-5" />
+          <span className="text-sm font-semibold">
+            View on Map
+          </span>
         </button>
       </div>
-
-      {/* SECTION 5: Dropdown Comments Thread Panel */}
+            {/* Comments Section */}
       {showComments && (
-        <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col space-y-3.5 animate-in fade-in slide-in-from-top-2 duration-200">
-          
-          {/* Comment Stream */}
-          {comments.map((comment, i) => (
-            <div key={i} className="flex items-start space-x-3">
-              <div className={`w-8 h-8 rounded-full ${comment.avatarBg || 'bg-[#00C853]'} text-white flex items-center justify-center font-bold text-xs shrink-0 select-none`}>
-                {comment.author.charAt(0).toLowerCase()}
+        <div className="mt-5 border-t border-slate-200 pt-5 space-y-4">
+
+          {/* Existing Comments */}
+          {comments.map((comment, index) => (
+            <div
+              key={index}
+              className="flex items-start gap-3"
+            >
+              <div
+                className={`w-9 h-9 rounded-full ${comment.avatarBg} text-white flex items-center justify-center font-bold shrink-0`}
+              >
+                {comment.author.charAt(0).toUpperCase()}
               </div>
-              <div className="bg-[#F4F4F6] rounded-2xl px-4 py-3 flex-1 text-left">
-                <div className="flex items-center">
-                  <span className="text-xs font-bold text-slate-900">{comment.author}</span>
-                  <span className="text-[11px] text-slate-400 font-normal ml-2">{comment.date}</span>
+
+              <div className="flex-1 min-w-0 bg-slate-100 rounded-xl p-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                  <span className="font-semibold text-sm text-slate-900">
+                    {comment.author}
+                  </span>
+
+                  <span className="text-xs text-slate-500">
+                    {comment.date}
+                  </span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-800 mt-1 leading-normal font-normal">{comment.text}</p>
+
+                <p className="mt-1 text-sm text-slate-700 break-words">
+                  {comment.text}
+                </p>
               </div>
             </div>
           ))}
 
-          {/* Write a Comment Form Input Block */}
-          <form onSubmit={handleCommentSubmit} className="flex items-center space-x-2 mt-2">
-            <input 
-              type="text"
-              name="commentText"
-              required
-              placeholder="Write a comment..."
-              className="flex-1 h-11 px-4 border-2 border-slate-800 rounded-xl outline-none text-slate-800 text-xs sm:text-sm font-semibold transition-all focus:border-[#7D5DF2] bg-white"
-            />
-            <button 
-              type="submit"
-              className="w-11 h-11 bg-slate-950 hover:bg-slate-900 text-white rounded-xl flex items-center justify-center transform active:scale-95 transition-all duration-200 cursor-pointer shrink-0"
-              aria-label="Send comment"
-            >
-              <HiPaperAirplane className="w-5 h-5 -rotate-45 -mr-0.5 mt-0.5 text-white" />
-            </button>
-          </form>
+          {/* Add Comment */}
+      <form
+  onSubmit={handleCommentSubmit}
+  className="flex flex-col sm:flex-row gap-3"
+>
+  <input
+    type="text"
+    name="commentText"
+    placeholder="Write a comment..."
+    required
+    className="
+      flex-1
+      h-12 sm:h-11
+      px-4
+      py-3
+      rounded-xl
+      border border-slate-300
+      text-sm
+      outline-none
+      focus:border-[#155DFC]
+      focus:ring-2 focus:ring-blue-100
+      bg-white
+    "
+  />
 
+  <button
+    type="submit"
+    className="
+      w-full sm:w-12
+      h-12
+      rounded-xl
+      bg-gradient-to-r
+      from-[#155DFC]
+      to-[#9810FA]
+      flex
+      items-center
+      justify-center
+      text-white
+      hover:opacity-90
+      transition
+    "
+  >
+    <HiPaperAirplane className="w-5 h-5 -rotate-45" />
+  </button>
+</form>
         </div>
       )}
-
     </div>
   );
 }

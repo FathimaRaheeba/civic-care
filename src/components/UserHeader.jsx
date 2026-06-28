@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   HiOutlineHome, 
@@ -9,12 +9,28 @@ import {
   HiOutlineBell,
   HiPlus,
   HiMegaphone,
-  HiBars3
+  HiBars3,
+  HiOutlineShieldCheck
 } from 'react-icons/hi2';
 
-export default function UserHeader({ onMenuClick }) {
+export default function UserHeader({ onMenuClick, onPostClick }) {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const navItems = [
     { name: "Home", icon: HiOutlineHome, path: "/home" },
@@ -132,7 +148,10 @@ export default function UserHeader({ onMenuClick }) {
         <div className="flex items-center space-x-4 shrink-0">
           
           {/* Post Button */}
-          <button className="hidden sm:inline-flex items-center space-x-1.5 px-5 py-2.5 bg-gradient-to-r from-[#155DFC] to-[#9810FA] hover:opacity-95 text-white font-bold text-sm rounded-full shadow-md shadow-blue-500/10 transform active:scale-98 transition-all duration-300 cursor-pointer">
+          <button 
+            onClick={onPostClick}
+            className="hidden sm:inline-flex items-center space-x-1.5 px-5 py-2.5 bg-gradient-to-r from-[#155DFC] to-[#9810FA] hover:opacity-95 text-white font-bold text-sm rounded-full shadow-md shadow-blue-500/10 transform active:scale-98 transition-all duration-300 cursor-pointer"
+          >
             <HiPlus className="w-4 h-4 stroke-[3]" />
             <span>Post</span>
           </button>
@@ -145,15 +164,74 @@ export default function UserHeader({ onMenuClick }) {
             </span>
           </button>
 
-          {/* User Account Panel Profile Block */}
-          <div className="flex items-center space-x-2.5 cursor-pointer group select-none">
-            {/* Account avatar updated to show 'F' as the first letter of Fathima */}
-            <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-[#155DFC] to-[#9810FA] flex items-center justify-center text-white text-sm font-black tracking-tight shadow-2xs transition-transform duration-500 group-hover:scale-105">
-              F
+          {/* User Account Panel Profile Block with Dropdown menu */}
+          <div ref={dropdownRef} className="relative">
+            <div 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center space-x-2.5 cursor-pointer group select-none"
+            >
+              {/* Account avatar updated to show 'F' as the first letter of Fathima */}
+              <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-[#155DFC] to-[#9810FA] flex items-center justify-center text-white text-sm font-black tracking-tight shadow-2xs transition-transform duration-500 group-hover:scale-105">
+                F
+              </div>
+              <span className="text-sm font-bold text-slate-700 group-hover:text-slate-900 hidden sm:inline max-w-[140px] truncate transition-colors duration-500">
+                Fathima
+              </span>
             </div>
-            <span className="text-sm font-bold text-slate-700 group-hover:text-slate-900 hidden sm:inline max-w-[140px] truncate transition-colors duration-500">
-              Fathima
-            </span>
+
+            {/* Dropdown Menu */}
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-3.5 w-[240px] bg-white border border-slate-100 rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.08)] z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                
+                {/* Header Profile Summary */}
+                <div className="px-4 py-3 flex flex-col text-left">
+                  <span className="text-[15px] font-bold text-slate-800 leading-tight">Fathima</span>
+                  <span className="text-xs text-slate-400 font-semibold mt-0.5 truncate leading-normal">
+                    fathima@civiccare.local
+                  </span>
+                </div>
+
+                <div className="h-px bg-slate-100 my-2" />
+
+                {/* Dropdown Item Actions */}
+                <div className="space-y-0.5">
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      navigate('/my-posts');
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition text-left cursor-pointer"
+                  >
+                    <span>My Posts</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      navigate('/dashboard');
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-[#155DFC] hover:bg-slate-50 transition text-left cursor-pointer"
+                  >
+                    <HiOutlineShieldCheck className="w-5 h-5 text-[#155DFC] stroke-[2.2]" />
+                    <span>Admin Panel</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const confirmLogout = window.confirm('Are you sure you want to logout?');
+                      if (confirmLogout) {
+                        setIsDropdownOpen(false);
+                        navigate('/signin');
+                      }
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-[#EA4335] hover:bg-red-50/50 transition text-left cursor-pointer"
+                  >
+                    <span>Logout</span>
+                  </button>
+                </div>
+
+              </div>
+            )}
           </div>
 
         </div>

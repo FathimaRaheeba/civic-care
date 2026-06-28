@@ -2,17 +2,15 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 
-import TrendingNow from './components/TrendingNow';
-import TrendingTopics from './components/TrendingTopics';
-import NearbyUpdates from './components/NearbyUpdates';
-
 
 import LandingPage from './pages/LandingPage';
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import HomePage from "./pages/HomePage";
 import FeedPage from './pages/FeedPage';
+import MyPosts from './pages/MyPosts';
 
+const WhitePage = () => <div className="min-h-screen w-full bg-white" />;
 
 function App() {
   return (
@@ -22,12 +20,14 @@ function App() {
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/home" element={<HomePage />} />
-         <Route path="/feed" element={<FeedPage />} />
-
-        
-        <Route path="/trending-now" element={<TrendingNow />} />
-        <Route path="/trending-topics" element={<TrendingTopics />} />
-        <Route path="/nearby-updates" element={<NearbyUpdates />} />
+        <Route path="/feed" element={<FeedPage />} />
+        <Route path="/my-posts" element={<MyPosts />} />
+        <Route path="/map" element={<WhitePage />} />
+        <Route path="/communities" element={<WhitePage />} />
+        <Route path="/resources" element={<WhitePage />} />
+        <Route path="/issue-map" element={<WhitePage />} />
+        <Route path="/community-board" element={<WhitePage />} />
+        <Route path="/dashboard" element={<WhitePage />} />
       </Routes>
     </Router>
   );
