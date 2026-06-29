@@ -10,104 +10,116 @@ import MobileNavigation from '../components/MobileNavigation';
 import MobileDrawer from '../components/MobileDrawer';
 import ReportConcernModal from '../components/ReportConcernModal';
 
+import { getAllPosts } from "../services/postService";
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [userConcerns, setUserConcerns] = useState(() => {
-    const saved = localStorage.getItem('civic_care_user_concerns');
-    return saved ? JSON.parse(saved) : [];
-  });
+ const [userConcerns, setUserConcerns] = useState([]);
   const [activeMobileTab, setActiveMobileTab] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const posts = [
-    ...userConcerns.map(concern => {
-      let categoryColor = "bg-slate-50 text-slate-600 border-slate-100";
-      let tag = concern.category.toLowerCase();
+     // Fetch posts from backend
+   const fetchPosts = async () => {
+  try {
+    const response = await getAllPosts();
+    setUserConcerns(response.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-      if (tag === 'bribery') {
-        categoryColor = "bg-rose-50 text-rose-600 border-rose-100";
-        tag = "bribe";
-      } else if (tag === 'potholes') {
-        categoryColor = "bg-orange-50 text-orange-600 border-orange-100";
-        tag = "pothole";
-      } else if (tag === 'water') {
-        categoryColor = "bg-blue-50 text-blue-600 border-blue-100";
-        tag = "water";
-      } else if (tag === 'electricity') {
-        categoryColor = "bg-yellow-50 text-[#B7791F] border-yellow-100/60";
-        tag = "electricity";
-      } else if (tag === 'waste') {
-        categoryColor = "bg-emerald-50 text-emerald-600 border-emerald-100";
-        tag = "garbage";
-      }
+useEffect(() => {
+  fetchPosts();
+}, []);
 
-      return {
-        id: concern.id,
-        tag: tag,
-        categoryColor: categoryColor,
-        title: concern.title,
-        text: concern.description,
-        author: "Fathima",
-        date: concern.date,
-        interactions: "1",
-        stats: { likes: "1", comments: "0", shares: "0", views: "1" }
-      };
-    }),
-    ...defaultPostMockData
-  ];
+ const posts = [
+  ...userConcerns.map((concern) => {
+    let categoryColor = "bg-slate-50 text-slate-600 border-slate-100";
+    let tag = concern.category.toLowerCase();
 
-  const handleSubmitConcern = (newConcern) => {
-    const concernWithMeta = {
-      id: Date.now(),
-      category: newConcern.category,
-      title: newConcern.title,
-      description: newConcern.description,
-      location: newConcern.location,
-      photo: newConcern.photo,
-      date: new Date().toLocaleDateString('en-GB')
+    if (tag === "bribery") {
+      categoryColor = "bg-rose-50 text-rose-600 border-rose-100";
+      tag = "bribe";
+    } else if (tag === "road") {
+      categoryColor = "bg-orange-50 text-orange-600 border-orange-100";
+      tag = "pothole";
+    } else if (tag === "water") {
+      categoryColor = "bg-blue-50 text-blue-600 border-blue-100";
+    } else if (tag === "electricity") {
+      categoryColor = "bg-yellow-50 text-[#B7791F] border-yellow-100/60";
+    } else if (tag === "waste") {
+      categoryColor = "bg-emerald-50 text-emerald-600 border-emerald-100";
+      tag = "garbage";
+    }
+
+    return {
+      id: concern._id, // MongoDB uses _id
+      tag,
+      categoryColor,
+      title: concern.title,
+      text: concern.description,
+author: concern.isAnonymous
+  ? "Anonymous"
+  : concern.userId?.name || "Unknown",
+        date: new Date(concern.createdAt).toLocaleDateString("en-GB"),
+      photo: concern.photo,
+      status: concern.status,
+      priority: concern.priority,
+      interactions: "0",
+      stats: {
+        likes: "0",
+        comments: "0",
+        shares: "0",
+        views: "0",
+      },
     };
+  }),
 
-    const updatedConcerns = [concernWithMeta, ...userConcerns];
-    setUserConcerns(updatedConcerns);
-    localStorage.setItem('civic_care_user_concerns', JSON.stringify(updatedConcerns));
-    setIsReportModalOpen(false);
-  };
+  ...defaultPostMockData,
+];
 
-  // Smooth scroll handler triggered when mobile bar tabs are clicked
   const handleTabClick = (index) => {
-    if (index === 2) {
-      navigate('/report-issue'); // Renders dedicated report path without modal interference
-      return;
-    }
+  if (index === 2) {
+    navigate("/report-issue");
+    return;
+  }
 
-    setActiveMobileTab(index);
-    let targetId = '';
-    switch (index) {
-      case 0:
-        targetId = 'home-section';
-        break;
-      case 1:
-        targetId = 'feed-section';
-        break;
-      case 3:
-        targetId = 'map-section';
-        break;
-      case 4:
-        targetId = 'report-section';
-        break;
-      default:
-        break;
-    }
+  setActiveMobileTab(index);
 
-    if (targetId) {
-      const el = document.getElementById(targetId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+  let targetId = "";
+
+  switch (index) {
+    case 0:
+      targetId = "home-section";
+      break;
+    case 1:
+      targetId = "feed-section";
+      break;
+    case 3:
+      targetId = "map-section";
+      break;
+    case 4:
+      targetId = "report-section";
+      break;
+    default:
+      break;
+  }
+
+  if (targetId) {
+    const el = document.getElementById(targetId);
+
+    if (el) {
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }
-  };
+  }
+};
+
+ 
 
   // Scroll Spy: Sync active tab highlight state with viewport intersections
   useEffect(() => {
@@ -124,6 +136,8 @@ export default function HomePage() {
         }
       });
     };
+
+ 
 
     const observerOptions = {
       root: null,
@@ -211,10 +225,10 @@ export default function HomePage() {
 
       {/* Report a Concern Modal Dialog Box */}
       {isReportModalOpen && (
-        <ReportConcernModal
-          onClose={() => setIsReportModalOpen(false)}
-          onSubmit={handleSubmitConcern}
-        />
+       <ReportConcernModal
+  onClose={() => setIsReportModalOpen(false)}
+  refreshPosts={fetchPosts}
+/>
       )}
     </div>
   );

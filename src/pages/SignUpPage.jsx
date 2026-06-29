@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { registerUser } from "../services/authService";
 import { Link, useNavigate } from "react-router-dom";
 import {
   HiOutlineEnvelope,
@@ -10,6 +11,47 @@ import { FiArrowRight, FiArrowLeft } from "react-icons/fi";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+  name: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+});
+const handleChange = (e) => {
+  setFormData({
+    ...formData,
+    [e.target.name]: e.target.value,
+  });
+};
+
+const handleRegister = async () => {
+  if (formData.password !== formData.confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  try {
+    await registerUser({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+    });
+
+    alert("Registration Successful");
+
+    navigate("/signin");
+  } catch (error) {
+    console.log("Full Error:", error);
+    console.log("Response:", error.response);
+
+    alert(
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      "Registration Failed"
+    );
+  }
+};
+
   return (
 <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 bg-gradient-to-br from-[#eff6ff] via-[#faf5ff] to-[#fdf2f8] relative overflow-hidden">
       {/* Background Blobs */}
@@ -57,8 +99,11 @@ export default function SignUpPage() {
               <HiOutlineUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
 
               <input
-                type="text"
-                placeholder="Your full name"
+  type="text"
+  name="name"
+  value={formData.name}
+  onChange={handleChange}
+  placeholder="Your full name"
                 className="w-full h-14 pl-12 pr-4 rounded-2xl border border-slate-200 bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none transition-all"
               />
             </div>
@@ -73,9 +118,12 @@ export default function SignUpPage() {
             <div className="relative">
               <HiOutlineEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
 
-              <input
-                type="email"
-                placeholder="you@example.com"
+            <input
+  type="email"
+  name="email"
+  value={formData.email}
+  onChange={handleChange}
+  placeholder="you@example.com"
                 className="w-full h-14 pl-12 pr-4 rounded-2xl border border-slate-200 bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none transition-all"
               />
             </div>
@@ -90,9 +138,12 @@ export default function SignUpPage() {
             <div className="relative">
               <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
 
-              <input
-                type="password"
-                placeholder="Minimum 6 characters"
+             <input
+  type="password"
+  name="password"
+  value={formData.password}
+  onChange={handleChange}
+  placeholder="Minimum 6 characters"
                 className="w-full h-14 pl-12 pr-4 rounded-2xl border border-slate-200 bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none transition-all"
               />
             </div>
@@ -107,9 +158,12 @@ export default function SignUpPage() {
             <div className="relative">
               <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
 
-              <input
-                type="password"
-                placeholder="Confirm your password"
+           <input
+  type="password"
+  name="confirmPassword"
+  value={formData.confirmPassword}
+  onChange={handleChange}
+  placeholder="Confirm your password"
                 className="w-full h-14 pl-12 pr-4 rounded-2xl border border-slate-200 bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none transition-all"
               />
             </div>
@@ -136,8 +190,8 @@ export default function SignUpPage() {
           </div>
 
           {/* Create Account Button */}
-          <button 
-            onClick={() => navigate('/home')}
+          <button
+  onClick={handleRegister}
             className="w-full h-14 rounded-2xl bg-gradient-to-r from-[#2b7fff] to-[#9810fa] text-white font-bold flex items-center justify-center gap-2 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
           >
             Create Account

@@ -1,14 +1,19 @@
 import React, { useState, useRef } from 'react';
 import { FiX, FiNavigation } from 'react-icons/fi';
 import { HiOutlinePhoto, HiXMark } from 'react-icons/hi2';
+import { createPost } from "../services/postService";
 
-export default function ReportConcernModal({ onClose, onSubmit }) {
-  const [category, setCategory] = useState('Other');
+export default function ReportConcernModal({
+  onClose,
+  refreshPosts,
+}) {
+    const [category, setCategory] = useState('Other');
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
   const [photo, setPhoto] = useState(null); // base64 string or file URL
   const [isLocating, setIsLocating] = useState(false);
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const fileInputRef = useRef(null);
 
   const categories = [
@@ -49,17 +54,13 @@ export default function ReportConcernModal({ onClose, onSubmit }) {
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhoto(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
 
+  if (file) {
+    setPhoto(file);
+  }
+};
   const removePhoto = (e) => {
     e.stopPropagation();
     setPhoto(null);
@@ -68,22 +69,43 @@ export default function ReportConcernModal({ onClose, onSubmit }) {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!title.trim() || !location.trim() || !description.trim()) {
-      alert("Please fill in all the required fields.");
-      return;
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!title.trim() || !location.trim() || !description.trim()) {
+    alert("Please fill in all the required fields.");
+    return;
+  }
+
+  try {
+    const formData = new FormData();
+
+    formData.append("category", category);
+    formData.append("title", title);
+    formData.append("location", location);
+    formData.append("description", description);
+    formData.append("isAnonymous", isAnonymous);
+
+    // photo should be a File object
+    if (photo) {
+      formData.append("photo", photo);
     }
-    if (onSubmit) {
-      onSubmit({
-        category,
-        title,
-        location,
-        description,
-        photo,
-      });
-    }
-  };
+
+    const token = localStorage.getItem("token");
+await createPost(formData, token);
+
+alert("Concern submitted successfully!");
+
+// Fetch latest posts
+await refreshPosts();
+
+// Close modal
+onClose();
+  } catch (error) {
+    console.error(error);
+    alert(error.response?.data?.message || "Failed to submit concern");
+  }
+};
 
   return (
     <div
@@ -215,11 +237,11 @@ className="h-11 w-11 sm:w-auto sm:px-4 border border-slate-200 rounded-xl bg-whi
             >
               {photo ? (
                 <div className="relative w-full max-h-[160px] flex items-center justify-center">
-                  <img
-                    src={photo}
-                    alt="Preview"
-                    className="max-h-[140px] rounded-xl object-contain shadow-xs"
-                  />
+                 <img
+  src={URL.createObjectURL(photo)}
+  alt="Preview"
+  className="max-h-[140px] rounded-xl object-contain shadow-xs"
+/>
                   <button
                     type="button"
                     onClick={removePhoto}
@@ -245,6 +267,18 @@ className="h-11 w-11 sm:w-auto sm:px-4 border border-slate-200 rounded-xl bg-whi
               )}
             </div>
           </div>
+
+          <div className="mt-4">
+  <label className="flex items-center gap-2 cursor-pointer">
+    <input
+      type="checkbox"
+      checked={isAnonymous}
+      onChange={(e) => setIsAnonymous(e.target.checked)}
+    />
+
+    <span>Post Anonymously</span>
+  </label>
+</div>
 
           {/* Submit and Cancel Buttons */}
           <div className="flex flex-col-reverse sm:flex-row gap-3 pt-3 border-t border-slate-100">

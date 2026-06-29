@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { loginUser } from "../services/authService";
 import { Link, useNavigate } from "react-router-dom";
 import {
   HiOutlineEnvelope,
@@ -9,6 +10,37 @@ import { FiArrowRight, FiArrowLeft } from "react-icons/fi";
 
 export default function SignInPage() {
   const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+  email: "",
+  password: "",
+});
+
+const handleChange = (e) => {
+  setFormData({
+    ...formData,
+    [e.target.name]: e.target.value,
+  });
+};
+
+const handleLogin = async () => {
+  try {
+    const response = await loginUser(formData);
+
+    // Save JWT Token
+    localStorage.setItem("token", response.data.token);
+
+    // Optional: Save logged-in user
+    localStorage.setItem("user", JSON.stringify(response.data.user));
+
+    alert("Login Successful");
+
+    navigate("/home");
+  } catch (error) {
+    alert(error.response?.data?.message || "Login Failed");
+  }
+};
+
   return (
 <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 bg-gradient-to-br from-[#eff6ff] via-[#faf5ff] to-[#fdf2f8] relative overflow-hidden">
       {/* Background Blobs */}
@@ -55,10 +87,11 @@ export default function SignInPage() {
 
             <div className="relative">
               <HiOutlineEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-
-              <input
-                type="email"
-                placeholder="you@example.com"
+<input
+  type="email"
+  name="email"
+  value={formData.email}
+  onChange={handleChange}
                 className="w-full h-12 sm:h-14 pl-12 pr-4 rounded-2xl border border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none transition-all"
               />
             </div>
@@ -73,9 +106,11 @@ export default function SignInPage() {
             <div className="relative">
               <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
 
-              <input
-                type="password"
-                placeholder="Enter password"
+             <input
+  type="password"
+  name="password"
+  value={formData.password}
+  onChange={handleChange}
                 className="w-full h-12 sm:h-14 pl-12 pr-4 rounded-2xl border border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none transition-all"
               />
             </div>
@@ -94,8 +129,8 @@ export default function SignInPage() {
           </div>
 
           {/* Sign In Button */}
-          <button 
-            onClick={() => navigate('/home')}
+          <button
+  onClick={handleLogin}
             className="w-full h-12 sm:h-14 rounded-2xl bg-gradient-to-r from-[#2b7fff] to-[#9810fa] text-white font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
           >
             Sign In
